@@ -1,8 +1,8 @@
-import { validationResult } from "express-validator";
-import { modifiedErrors } from "../../utils/commonFns.mjs";
+import jwt from "jsonwebtoken";
 import pool from "../../utils/db.mjs";
 import { hash, compare } from "bcrypt";
-import jwt from "jsonwebtoken";
+import { validationResult } from "express-validator";
+import { modifiedErrors } from "../../utils/commonFns.mjs";
 
 const loginUser = async (req) => {
   return new Promise(async (resolve, reject) => {
@@ -65,21 +65,24 @@ const loginUser = async (req) => {
 };
 
 const logoutUser = async (req) => {
-  // return new Promise(async (resolve, reject) => {
-  //   try {
-  //     const token = req.headers["authorization"];
+  return new Promise(async (resolve, reject) => {
+    try {
+      const token = req.headers["authorization"];
 
-  //     if (!token) {
-  //       reject({ status: 401, message: "Unauthorized" });
-  //     }
+      if (!token) {
+        reject({ status: 401, message: "Unauthorized" });
+      }
 
-  //     const { userRole, userEmail } = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  //     console.log({ userRole, userEmail });
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     reject(reject({ status: 401, message: "Unauthorized" }));
-  //   }
-  // });
+      const { userRole, userEmail } = jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      console.log({ userRole, userEmail });
+    } catch (error) {
+      console.log("error", error);
+      reject({ status: 401, message: "Unauthorized" });
+    }
+  });
 };
 
 const addADMIN = async (req) => {
